@@ -12,7 +12,7 @@ import datetime
 
 class_labels=['0 - No Fire', '1 - Fire']
 
-model = load_model("model5/model.h5")
+model = load_model("model.h5")
 
 start = datetime.datetime.now()
 
@@ -47,9 +47,7 @@ cv2.putText(orig,"Category: "+ res,(10,20),1,1,(0,255,0),2)
 cv2.putText(orig,"Latency: "+str(elapsed),(10,50),1,1,(0,255,0),2)
 cv2.putText(orig,"Probability: "+str(prob),(10,80),1,1,(0,255,0),2)
 
-#results.append(orig)
 
-#montage = build_montages(results, (128, 128), (15, 15))[0]
 
 cv2.imshow("Results", orig)
 cv2.waitKey(0)
