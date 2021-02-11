@@ -11,37 +11,18 @@ import imutils
 import cv2
 
 
-# construct the argument parser and parse the arguments
-#ap = argparse.ArgumentParser()
-#ap.add_argument("-i", "--image", required=True,
-#	help="path to the input image")
-#ap.add_argument("-m", "--model", type=str, default="vgg",
-#	choices=("vgg", "resnet", "covid19"),
-#	help="model to be used")
-#args = vars(ap.parse_args())
 
-# initialize the model to be VGG16
+
+
 Model = Xception
 
 labels=  {'0': 0, '1': 1}
 class_labels=['0 - No Fire', '1 - Fire']
-# check to see if we are using ResNet
-#if args["model"] == "resnet":
-#	Model = ResNet50
-
-# check to see if we are using ResNet
-#elif args["model"] == "covid19":
-#	Model = ('/home/ag/keras-covid-19/covid19ct2.model')
-#def subtract_median_bg_image(im):
-    #k = np.max(im.shape)//20*2+1
-    #bg = cv2.medianBlur(im, 13)
-
-    #print(k)
-    #return cv2.addWeighted (im, 4, bg, -4, 128)
 
 
 
-new_model = load_model("model5/model.h5")
+
+new_model = load_model("model.h5")
 from tensorflow.keras.preprocessing import image
 # Check its architecture
 new_model.summary()
@@ -68,19 +49,8 @@ label=class_labels[(int(i))]
 print(label)
 print("res",result[0][int(i)])
 
-# load the pre-trained CNN from disk
-print("[INFO] loading model...")
-#model = Model(weights="imagenet")
-#model = load_model("BEST_MODEL_FINAL.h5", custom_objects=None, compile=True)
 
-# load the original image from disk (in OpenCV format) and then
-# resize the image to its target dimensions
 
-# decode the ImageNet predictions to obtain the human-readable label
-#decoded = imagenet_utils.decode_predictions(preds)
-#(imagenetID, label, prob) = decoded[0][0]
-#label = "{}: {:.2f}%".format(label, prob * 100)
-#print("[INFO] {}".format(label))
 
 image = load_img(path, target_size=(128, 128))
 image = img_to_array(image)
@@ -90,20 +60,15 @@ image = imagenet_utils.preprocess_input(image)
 orig = cv2.imread(path)
 resized = cv2.resize(orig, (128, 128))
 
-# initialize our gradient class activation map and build the heatmap
 cam = GradCAM(new_model, int(i))
 heatmap = cam.compute_heatmap(test_img)
 
-# resize the resulting heatmap to the original input image dimensions
-# and then overlay heatmap on top of the image
+
 heatmap = cv2.resize(heatmap, (orig.shape[1], orig.shape[0]))
 (heatmap, output) = cam.overlay_heatmap(heatmap, orig, alpha=0.3)
 
-# draw the predicted label on the output image
-#cv2.rectangle(output, (0, 0), (340, 40), (0, 0, 0), -1)
-#cv2.putText(output, "re", (10, 25), cv2.FONT_HERSHEY_SIMPLEX,0.8, (255, 255, 255), 2)
-# display the original image and resulting heatmap and output image
-# to our screen
+
+
 output = np.hstack([orig, output])
 output = imutils.resize(output, height=500)
 print(orig.shape)
