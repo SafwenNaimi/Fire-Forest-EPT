@@ -34,7 +34,7 @@ validation_dir = 'fire_dataset/test/'
 bacth_size = 8
 epochs = 150
 warmup_epocks = 2
-learning_rate = 0.000001 #0.0005
+learning_rate = 0.000001 #0.00001
 warmup_learning_rate = 0.00008
 height = 128
 width = 128
@@ -45,9 +45,7 @@ rlrop_patience = 3
 decay_drop = 0.5
 based_model_last_block_layer_number = 0#100
 
-#NAME="SBS-{}".format(int(time.time()))
 
-#tensorboard=TensorBoard(log_dir='logs\{}'.format(NAME))
 
 
 train_datagen = ImageDataGenerator(
@@ -77,12 +75,7 @@ val_generator = val_datagen.flow_from_directory(
         shuffle=True,
         class_mode= 'categorical')
 
-#test_generator = ImageDataGenerator(rescale=1/255).flow_from_directory(
-#        test_dir,
-#        target_size=(HEIGHT, WIDTH),
-#        batch_size = 1,
-#        class_mode= 'categorical',
-#        shuffle = False)
+
 
 import efficientnet.tfkeras as eft
 from keras.layers import Flatten,GlobalMaxPooling2D
@@ -91,7 +84,7 @@ from tensorflow.keras.layers import BatchNormalization
 
 def create_model(input_shape, n_out):
     input_tensor = Input(shape=input_shape)
-    base_model = applications.VGG16(weights='imagenet',  # à modifier
+    base_model = applications.ResNet50(weights='imagenet',  # à modifier
                                         include_top=False,
                                         input_tensor=input_tensor)
     print(base_model.summary())
@@ -123,7 +116,7 @@ for layer in model.layers[based_model_last_block_layer_number:]:
     layer.trainable = True
 
 
-#new_model = tf.keras.models.load_model("finaléééé.h5")
+
 
 
 
@@ -138,7 +131,6 @@ model.compile(optimizer=optimizer, loss="categorical_crossentropy",  metrics=met
 
 
 
-#es = EarlyStopping(monitor='val_loss', mode='min', patience=es_patience, verbose=1)
 rlrop = ReduceLROnPlateau(monitor='val_loss', mode='min', patience=rlrop_patience, factor=decay_drop, min_lr=1e-6, verbose=1)
 
 
@@ -181,7 +173,6 @@ history = model.fit_generator(generator=train_generator,
                               callbacks=callback_list,
                               verbose=1).history
 
-#exported_model = tfmot.sparsity.keras.strip_pruning(pruned_model)
 
 
 model.save('modell.h5')
@@ -236,8 +227,7 @@ cnf_matrix = confusion_matrix(train_data['diagnosis'].astype('int'), train_predi
 cnf_matrix_norm = cnf_matrix.astype('float') / cnf_matrix.sum(axis=1)[:, np.newaxis]
 df_cm = pd.DataFrame(cnf_matrix_norm, index=labels, columns=labels)
 plt.figure(figsize=(16, 7))
-cmap = sns.diverging_palette(220, 20, as_cmap=True)
-sns.heatmap(df_cm, annot=True, fmt='.2f', cmap=cmap)
+sns.heatmap(df_cm, annot=True, fmt='.2f', cmap="Blues")
 plt.show()
 
 
@@ -257,7 +247,7 @@ plt.title("Training Loss and Accuracy")
 plt.xlabel("Epoch #")
 plt.ylabel("Loss/Accuracy")
 plt.legend(loc="lower left")
-plt.savefig("resultt.png")
+plt.savefig("result.png")
 
 
 
